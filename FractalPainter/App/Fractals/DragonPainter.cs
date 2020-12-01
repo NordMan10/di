@@ -9,21 +9,24 @@ namespace FractalPainting.App.Fractals
     {
         private readonly IImageHolder imageHolder;
         private readonly DragonSettings settings;
+        private readonly Palette palette;
 
-        public DragonPainter(IImageHolder imageHolder, DragonSettings settings)
+
+        public DragonPainter(IImageHolder imageHolder, DragonSettings settings, Palette palette)
         {
             this.imageHolder = imageHolder;
             this.settings = settings;
-            
+            this.palette = palette;
         }
 
         public void Paint()
         {
             using (var graphics = imageHolder.StartDrawing())
+            using (var backgroundBrush = new SolidBrush(palette.BackgroundColor))
             {
                 var imageSize = imageHolder.GetImageSize();
                 var size = Math.Min(imageSize.Width, imageSize.Height) / 2.1f;
-                graphics.FillRectangle(Brushes.Black, 0, 0, imageSize.Width, imageSize.Height);
+                graphics.FillRectangle(backgroundBrush, 0, 0, imageSize.Width, imageSize.Height);
                 var r = new Random();
                 var cosa = (float) Math.Cos(settings.Angle1);
                 var sina = (float) Math.Sin(settings.Angle1);
@@ -33,14 +36,18 @@ namespace FractalPainting.App.Fractals
                 var shiftY = settings.ShiftY*size*0.8f;
                 var scale = settings.Scale;
                 var p = new PointF(0, 0);
-                foreach (var i in Enumerable.Range(0, settings.IterationsCount))
+                var primaryColor = true;
+                using (var penBrush = new SolidBrush(primaryColor ? palette.PrimaryColor : palette.SecondaryColor))
                 {
-                    graphics.FillRectangle(Brushes.Yellow, imageSize.Width/3f + p.X, imageSize.Height/2f + p.Y, 1, 1);
-                    if (r.Next(0, 2) == 0)
-                        p = new PointF(scale*(p.X*cosa - p.Y*sina), scale*(p.X*sina + p.Y*cosa));
-                    else
-                        p = new PointF(scale*(p.X*cosb - p.Y*sinb) + shiftX, scale*(p.X*sinb + p.Y*cosb) + shiftY);
-                    if (i%100 == 0) imageHolder.UpdateUi();
+                    foreach (var i in Enumerable.Range(0, settings.IterationsCount))
+                    {
+                        graphics.FillRectangle(penBrush, imageSize.Width / 3f + p.X, imageSize.Height / 2f + p.Y, 1, 1);
+                        if (r.Next(0, 2) == 0)
+                            p = new PointF(scale * (p.X * cosa - p.Y * sina), scale * (p.X * sina + p.Y * cosa));
+                        else
+                            p = new PointF(scale * (p.X * cosb - p.Y * sinb) + shiftX, scale * (p.X * sinb + p.Y * cosb) + shiftY);
+                        if (i % 100 == 0) imageHolder.UpdateUi();
+                    }
                 }
             }
             imageHolder.UpdateUi();

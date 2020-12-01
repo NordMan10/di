@@ -9,21 +9,20 @@ namespace FractalPainting.App.Fractals
     {
         private readonly IImageHolder imageHolder;
         private readonly DragonSettings settings;
-        private readonly float size;
-        private Size imageSize;
 
         public DragonPainter(IImageHolder imageHolder, DragonSettings settings)
         {
             this.imageHolder = imageHolder;
             this.settings = settings;
-            imageSize = imageHolder.GetImageSize();
-            size = Math.Min(imageSize.Width, imageSize.Height)/2.1f;
+            
         }
 
         public void Paint()
         {
             using (var graphics = imageHolder.StartDrawing())
             {
+                var imageSize = imageHolder.GetImageSize();
+                var size = Math.Min(imageSize.Width, imageSize.Height) / 2.1f;
                 graphics.FillRectangle(Brushes.Black, 0, 0, imageSize.Width, imageSize.Height);
                 var r = new Random();
                 var cosa = (float) Math.Cos(settings.Angle1);

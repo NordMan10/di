@@ -7,13 +7,20 @@ using Ninject;
 
 namespace FractalPainting.App.Actions
 {
-    public class DragonFractalAction : IUiAction, INeed<IImageHolder>
+    public class DragonFractalAction : IUiAction
     {
-        private IImageHolder imageHolder;
+        //private IImageHolder imageHolder;
 
-        public void SetDependency(IImageHolder dependency)
+        //private readonly Func<DragonSettings, DragonPainter> dragonPainterFactory;
+        private readonly IDragonPainterFactory dragonPainterFactory;
+        private readonly Func<DragonSettings> dragonSettingsGeneratorFactory;
+
+
+        public DragonFractalAction(Func<DragonSettings> dragonSettingsGeneratorFactory,
+            /*Func<DragonSettings, DragonPainter> dragonPainterFactory*/ IDragonPainterFactory dragonPainterFactory)
         {
-            imageHolder = dependency;
+            this.dragonPainterFactory = dragonPainterFactory;
+            this.dragonSettingsGeneratorFactory = dragonSettingsGeneratorFactory;
         }
 
         public string Category => "Фракталы";
@@ -22,19 +29,27 @@ namespace FractalPainting.App.Actions
 
         public void Perform()
         {
-            var dragonSettings = CreateRandomSettings();
+            var dragonSettings = dragonSettingsGeneratorFactory();
+            var dragonPainter = dragonPainterFactory.GetDragonPainter(dragonSettings);
             // редактируем настройки:
             SettingsForm.For(dragonSettings).ShowDialog();
             // создаём painter с такими настройками
-            var container = new StandardKernel();
-            container.Bind<IImageHolder>().ToConstant(imageHolder);
-            container.Bind<DragonSettings>().ToConstant(dragonSettings);
-            container.Get<DragonPainter>().Paint();
+            //var container = new StandardKernel();
+            //container.Bind<IImageHolder>().ToConstant(imageHolder);
+            //container.Bind<DragonSettings>().ToConstant(dragonSettings);
+            //container.Get<DragonPainter>().Paint();
+            dragonPainter.Paint();
+
         }
 
         private static DragonSettings CreateRandomSettings()
         {
             return new DragonSettingsGenerator(new Random()).Generate();
         }
+    }
+
+    public interface IDragonPainterFactory
+    {
+        public DragonPainter GetDragonPainter(DragonSettings settings);
     }
 }

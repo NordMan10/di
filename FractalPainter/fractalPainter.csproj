@@ -32,4 +32,8 @@
     <ItemGroup>
       <None Remove="Solved\**" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Infrastructure\Injection\" />
+    </ItemGroup>
 </Project>

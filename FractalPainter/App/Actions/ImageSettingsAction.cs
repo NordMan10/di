@@ -1,5 +1,4 @@
 ﻿using FractalPainting.Infrastructure.Common;
-using FractalPainting.Infrastructure.Injection;
 using FractalPainting.Infrastructure.UiActions;
 
 namespace FractalPainting.App.Actions
@@ -14,7 +13,6 @@ namespace FractalPainting.App.Actions
             this.imageHolder = imageHolder;
             this.imageSettings = imageSettings;
         }
-
 
         public string Category => "Настройки";
         public string Name => "Изображение...";

@@ -4,7 +4,6 @@ using Ninject;
 using FractalPainting.Infrastructure.UiActions;
 using FractalPainting.App.Actions;
 using FractalPainting.Infrastructure.Common;
-using FractalPainting.Infrastructure.Injection;
 using FractalPainting.App.Fractals;
 using Ninject.Extensions.Conventions;
 
@@ -23,7 +22,7 @@ namespace FractalPainting.App
             {
                 var container = new StandardKernel();
 
-                //container.Bind<IUiAction>().To<SaveImageAction>();
+                container.Rebind<IUiAction>().To<SaveImageAction>();
                 //container.Bind<IUiAction>().To<DragonFractalAction>();
                 //container.Bind<IUiAction>().To<KochFractalAction>();
                 //container.Bind<IUiAction>().To<ImageSettingsAction>();
@@ -34,6 +33,7 @@ namespace FractalPainting.App
 
                 container.Bind<IObjectSerializer>().To<XmlObjectSerializer>().WhenInjectedInto<SettingsManager>();
                 container.Bind<IBlobStorage>().To<FileBlobStorage>().WhenInjectedInto<SettingsManager>();
+                container.Bind<IImageDirectoryProvider>().To<AppSettings>();
 
                 container.Bind<AppSettings>().ToMethod(context => context.Kernel.Get<SettingsManager>().Load()).InSingletonScope();
                 container.Bind<ImageSettings>().ToMethod(context => context.Kernel.Get<AppSettings>().ImageSettings);

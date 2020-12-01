@@ -12,12 +12,12 @@ namespace FractalPainting.App.Actions
         //private IImageHolder imageHolder;
 
         //private readonly Func<DragonSettings, DragonPainter> dragonPainterFactory;
-        private readonly IDragonPainterFactory dragonPainterFactory;
-        private readonly Func<DragonSettings> dragonSettingsGeneratorFactory;
+        private readonly Func<DragonSettings, DragonPainter> dragonPainterFactory;
+        private readonly Func<DragonSettingsGenerator> dragonSettingsGeneratorFactory;
 
 
-        public DragonFractalAction(Func<DragonSettings> dragonSettingsGeneratorFactory,
-            /*Func<DragonSettings, DragonPainter> dragonPainterFactory*/ IDragonPainterFactory dragonPainterFactory)
+        public DragonFractalAction(Func<DragonSettingsGenerator> dragonSettingsGeneratorFactory,
+            Func<DragonSettings, DragonPainter> dragonPainterFactory/*IDragonPainterFactory dragonPainterFactory*/)
         {
             this.dragonPainterFactory = dragonPainterFactory;
             this.dragonSettingsGeneratorFactory = dragonSettingsGeneratorFactory;
@@ -29,8 +29,8 @@ namespace FractalPainting.App.Actions
 
         public void Perform()
         {
-            var dragonSettings = dragonSettingsGeneratorFactory();
-            var dragonPainter = dragonPainterFactory.GetDragonPainter(dragonSettings);
+            var dragonSettings = dragonSettingsGeneratorFactory().Generate();
+            var dragonPainter = dragonPainterFactory(dragonSettings);
             // редактируем настройки:
             SettingsForm.For(dragonSettings).ShowDialog();
             // создаём painter с такими настройками
